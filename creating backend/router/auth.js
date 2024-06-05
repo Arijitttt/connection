@@ -5,7 +5,7 @@ require('../db/connection')
 router.get('/',(req,resp)=>{
     resp.send("from auth.js")
 })
-router.post("/register",(req,resp)=>{
+router.post("/api/register",(req,resp)=>{
 
 
 const {name , email, phone, work,password,cpassword} = req.body
@@ -34,9 +34,25 @@ User.findOne({email:email})
 })
 .catch((err)=>{console.log(err);})
 
-
-
-
-
 })
+
+router.delete('/api/delete/:id',(req,resp)=>{
+    const userId = req.params.id
+    User.findById(userId)
+    .then((user)=>{
+        if(!user){
+            return resp.status(404).json({error:"user id not found"})
+        }
+
+        return user.deleteOne()
+    })
+    .then(()=>{
+        resp.status(200).json({message:"user deleted successfully"})
+    })
+    .catch((err)=>{
+        console.log(err);
+        resp.status(500).json({error:"Internal Server Error"})
+    })
+})
+
 module.exports = router
